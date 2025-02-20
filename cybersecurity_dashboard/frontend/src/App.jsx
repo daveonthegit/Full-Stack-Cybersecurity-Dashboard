@@ -3,28 +3,45 @@ import axios from 'axios';
 
 function App() {
   const [logs, setLogs] = useState([]);
-  const [value, setValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get('http://localhost:5000/logs')
-         .then(res => setLogs(res.data));
+      .then(res => setLogs(res.data))
+      .catch(() => setError('Failed to fetch logs.'));
   }, []);
 
   const submitLog = async () => {
-    const response = await axios.post('http://localhost:5000/logs', { value: parseFloat(value) });
-    setLogs([...logs, { value }]);
-    alert(response.data.anomaly ? "Anomaly detected!" : "Log added.");
-    setValue('');
+    if (!inputValue) {
+      alert('Please enter a valid number.');
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/logs', { value: parseFloat(inputValue) });
+      setLogs([...logs, { value: inputValue }]);
+      alert(response.data.anomaly ? 'Anomaly detected!' : 'Log added.');
+      setInputValue('');
+    } catch {
+      setError('Failed to submit log.');
+    }
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto">
+    <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">Cybersecurity Dashboard</h1>
-      <input type="number" className="border p-2 mr-2" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Enter log value" />
+      <input 
+        type="number" 
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        placeholder="Enter log value"
+        className="border p-2 mr-2"
+      />
       <button onClick={submitLog} className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
-      <ul className="mt-6 space-y-2">
-        {logs.map((log, idx) => (
-          <li key={idx} className="border p-2 rounded">Log Value: {log.value}</li>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
+      <ul className="mt-6">
+        {logs.map((log, index) => (
+          <li key={index} className="border p-2 mb-2">Log Value: {log.value}</li>
         ))}
       </ul>
     </div>

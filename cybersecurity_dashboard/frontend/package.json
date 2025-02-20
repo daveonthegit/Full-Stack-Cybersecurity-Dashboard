@@ -1,0 +1,14 @@
+{
+  "name": "cybersecurity-dashboard",
+  "version": "1.0.0",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.0.24"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  }
+}
